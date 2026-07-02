@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './login.css'; 
+import {signUp} from '../config/auth';
 
 export default function SignUp() {
   const [name, setName] = useState('');
@@ -10,7 +11,7 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
@@ -18,6 +19,13 @@ export default function SignUp() {
       return;
     }
     
+    try {
+      response = await signUp(email, password, name);
+      console.log("Sign up successful:", response);
+      
+    } catch (error) {
+      setError(error.message);
+    }
     setError('');
     console.log("Submitting sign up for:", { name, email, password });
   };

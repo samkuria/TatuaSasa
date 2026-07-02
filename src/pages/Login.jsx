@@ -1,16 +1,46 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './login.css';
+import { signIn } from '../config/auth';
+import { supabase } from '../config/supabaseClient';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    console.log("Submitting login for:", { email, password });
-  };
+const handleLogin = async (e) => {
+  e.preventDefault();
+
+  try {
+    const { user } = await signIn(email, password);
+
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) throw profileError;
+
+    switch (profile.role) {
+      case 'admin':
+        navigate('/admin/supervisors');
+        break;
+      case 'supervisor':
+        navigate('/supervisor/dashboard');
+        break;
+      case 'technician':
+        navigate(profile.status === 'approved' ? '/technician/dashboard' : '/pending-approval');
+        break;
+      default:
+        navigate('/dashboard');
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+  }
+};
 
   const handleGoogleLogin = () => {
     console.log("Initiating Google Sign-In");

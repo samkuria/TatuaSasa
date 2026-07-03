@@ -1,8 +1,11 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../config/supabaseClient'; // Make sure this path is correct based on your folder structure
 import './login.css'; 
 
 export default function SignUp() {
+  const navigate = useNavigate(); // Hook for redirecting the user
+  
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -10,7 +13,14 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSignUp = (e) => {
+  // New state to control our custom notification modal
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    type: '', // 'success', 'exists', or 'error'
+    message: ''
+  });
+
+  const handleSignUp = async (e) => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
@@ -19,7 +29,60 @@ export default function SignUp() {
     }
     
     setError('');
-    console.log("Submitting sign up for:", { name, email, password });
+
+    try {
+      // Send the sign-up request to Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          }
+        }
+      });
+
+      if (error) {
+        // Check if the error is because the user already exists
+        if (error.message.toLowerCase().includes('already registered')) {
+          setModalConfig({
+            isOpen: true,
+            type: 'exists',
+            message: 'An account with this email already exists. Please log in.'
+          });
+        } else {
+          // Handle any other Supabase errors (e.g., weak password)
+          setModalConfig({
+            isOpen: true,
+            type: 'error',
+            message: error.message
+          });
+        }
+      } else {
+        // Success!
+        setModalConfig({
+          isOpen: true,
+          type: 'success',
+          message: 'Sign up successful! You can now log in to your account.'
+        });
+      }
+    } catch (err) {
+      setModalConfig({
+        isOpen: true,
+        type: 'error',
+        message: 'An unexpected error occurred. Please try again.'
+      });
+    }
+  };
+
+  // Function to handle the "Okay" button click
+  const handleModalClose = () => {
+    if (modalConfig.type === 'success' || modalConfig.type === 'exists') {
+      navigate('/'); // Redirect to login
+    } else {
+      // Just close the modal so they can fix the error
+      setModalConfig({ ...modalConfig, isOpen: false }); 
+    }
   };
 
   const handleGoogleSignUp = () => {
@@ -28,6 +91,40 @@ export default function SignUp() {
 
   return (
     <div className="login-container">
+      
+      {/* --- CUSTOM NOTIFICATION MODAL --- */}
+      {modalConfig.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          {/* Reusing your login-form class for the modal card! */}
+          <div className="login-form" style={{ textAlign: 'center', margin: 0 }}>
+            <h2 style={{ 
+              color: modalConfig.type === 'error' ? '#a40606' : '#057840',
+              marginBottom: '15px'
+            }}>
+              {modalConfig.type === 'success' && 'Success!'}
+              {modalConfig.type === 'exists' && 'Already Signed Up'}
+              {modalConfig.type === 'error' && 'Sign Up Failed'}
+            </h2>
+            <p style={{ color: '#555', marginBottom: '25px', lineHeight: '1.5' }}>
+              {modalConfig.message}
+            </p>
+            <button className="submit-btn" onClick={handleModalClose}>
+              Okay
+            </button>
+          </div>
+        </div>
+      )}
+      {/* --------------------------------- */}
+
       <form className="login-form" onSubmit={handleSignUp}>
         <h1>Tatua Sasa</h1>
         <h2>Create an Account</h2>

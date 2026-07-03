@@ -1,15 +1,37 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { supabase } from '../config/supabaseClient'; // Ensure this path matches your structure
 import './login.css';
 
 export default function Login() {
+  const navigate = useNavigate();
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState(''); // State to hold login errors
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Submitting login for:", { email, password });
+    setError(''); // Clear any previous errors when they try again
+
+    try {
+      // Attempt to sign in with Supabase
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        // Display error if email or password is wrong
+        setError("Incorrect email or password. Please try again.");
+      } else {
+        // Success! Push them straight into the system
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    }
   };
 
   const handleGoogleLogin = () => {
@@ -22,6 +44,14 @@ export default function Login() {
         <h1>Tatua Sasa</h1>
         <h2>Login to your Account</h2>
         
+        {/* --- ERROR MESSAGE DISPLAY --- */}
+        {error && (
+          <p style={{ color: '#a40606', textAlign: 'center', marginBottom: '15px', fontWeight: '500' }}>
+            {error}
+          </p>
+        )}
+        {/* ----------------------------- */}
+
         <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input 
@@ -86,16 +116,15 @@ export default function Login() {
         
         <button type="submit" className="submit-btn">Log In</button>
 
-        {/* --- NEW BOTTOM LINKS --- */}
         <div className="auth-links">
           <p>
             Forgot password? <a href="#" className="link">Reset</a>
           </p>
           <p>
-            Are you signed up? <a href="/signup" className="link">Sign up</a>
+            {/* Replaced <a> tag with React Router <Link> */}
+            Are you signed up? <Link to="/signup" className="link">Sign up</Link>
           </p>
         </div>
-        {/* ------------------------ */}
 
       </form>
     </div>

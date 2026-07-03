@@ -25,10 +25,10 @@ export default function App() {
         <Routes>
             <Route path="/" element={session? <Home />: <Login />} />
             <Route path="/login" element={<Login />} />
-           <Route path="/home" element={session ? <Home /> : <Login />} />
-           <Route path="/signup" element={<SignUp />} />
-           <Route path="/dashboard" element={session ? <StaffDashboard /> : <Login />} />
-           <Route path="admin/supervisors" element={session ? <AdminSupervisors /> : <Login />} />
+            <Route path="/home" element={session ? <Home /> : <Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="admin/supervisors" element={session ? <AdminSupervisors /> : <Login />} />
+            <Route path="/staffdashboard" element={<StaffDashboard />} />
         </Routes>
         </BrowserRouter>
     )

@@ -1,38 +1,49 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../config/supabaseClient'; // Ensure this path matches your structure
 import './login.css';
+import { signIn } from '../config/auth';
+import { supabase } from '../config/supabaseClient';
 
 export default function Login() {
   const navigate = useNavigate();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(''); // State to hold login errors
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError(''); // Clear any previous errors when they try again
+const handleLogin = async (e) => {
+  e.preventDefault();
 
-    try {
-      // Attempt to sign in with Supabase
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+  try {
+    const { user } = await signIn(email, password);
 
-      if (signInError) {
-        // Display error if email or password is wrong
-        setError("Incorrect email or password. Please try again.");
-      } else {
-        // Success! Push them straight into the system
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role, status')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError) throw profileError;
+
+    switch (profile.role) {
+      case 'admin':
+        navigate('/admin/supervisors');
+        break;
+      case 'supervisor':
+        navigate('/supervisor/dashboard');
+        break;
+      case 'technician':
+        navigate(profile.status === 'approved' ? '/technician/dashboard' : '/pending-approval');
+        break;
+      default:
         navigate('/dashboard');
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
     }
-  };
+  } catch (error) {
+    console.error("Login error:", error);
+  }
+};
 
   const handleGoogleLogin = () => {
     console.log("Initiating Google Sign-In");

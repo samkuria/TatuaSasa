@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../config/supabaseClient'; // Make sure this path is correct based on your folder structure
 import './login.css'; 
+import {signUp} from '../config/auth';
 
 export default function SignUp() {
   const navigate = useNavigate(); // Hook for redirecting the user
@@ -13,13 +14,6 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
 
-  // New state to control our custom notification modal
-  const [modalConfig, setModalConfig] = useState({
-    isOpen: false,
-    type: '', // 'success', 'exists', or 'error'
-    message: ''
-  });
-
   const handleSignUp = async (e) => {
     e.preventDefault();
     
@@ -28,6 +22,13 @@ export default function SignUp() {
       return;
     }
     
+    try {
+      response = await signUp(email, password, name);
+      console.log("Sign up successful:", response);
+      
+    } catch (error) {
+      setError(error.message);
+    }
     setError('');
 
     try {

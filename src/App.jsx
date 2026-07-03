@@ -5,6 +5,8 @@ import {supabase} from './config/supabaseClient';
 import { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import AdminSupervisors from './pages/AdminSupervisors';
+import StaffDashboard from './pages/StaffDashboard';
+
 export default function App() {
     const [session, setSession] = useState(null);
 
@@ -24,9 +26,10 @@ export default function App() {
         <Routes>
             <Route path="/" element={session? <Home />: <Login />} />
             <Route path="/login" element={<Login />} />
-           <Route path="/home" element={session ? <Home /> : <Login />} />
-           <Route path="/signup" element={<SignUp />} />
-           <Route path="admin/supervisors" element={session ? <AdminSupervisors /> : <Login />} />
+            <Route path="/home" element={session ? <Home /> : <Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="admin/supervisors" element={session ? <AdminSupervisors /> : <Login />} />
+            <Route path="/staffdashboard" element={<StaffDashboard />} />
         </Routes>
         </BrowserRouter>
     )

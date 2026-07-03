@@ -1,0 +1,178 @@
+/* staff-dashboard.css */
+
+/* Base Container */
+.dashboard-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 20px 15px; /* Reduced padding for mobile screens */
+  background-color: #127d59; 
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Dashboard Card */
+.dashboard-card {
+  width: 100%;
+  max-width: 1000px; 
+  background: white;
+  padding: 20px; /* Reduced padding for mobile */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+/* Header - Mobile First (Stacked) */
+.dashboard-header {
+  display: flex;
+  flex-direction: column; /* Stacks title and button on phones */
+  gap: 15px;
+  align-items: stretch;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  color: #057840; 
+  margin: 0;
+  text-align: center;
+}
+
+/* Reusing blueprint button */
+.primary-btn {
+  padding: 12px 20px; /* Slightly taller for touch targets */
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #a40606;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%; /* Full width button on mobile */
+}
+
+.primary-btn:hover {
+  background-color: rgb(238, 169, 7);
+}
+
+/* Table Responsive Wrapper */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto; /* Allows horizontal scrolling on tiny phones */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  margin-top: 20px;
+}
+
+/* Table Styles */
+.ticket-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px; /* Ensures the table doesn't shrink to unreadable sizes */
+}
+
+.ticket-table th, 
+.ticket-table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.ticket-table th {
+  color: #555;
+  font-weight: 600;
+  white-space: nowrap; /* Prevents headers from wrapping awkwardly */
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+.status-pending { background-color: #ffeaea; color: #a40606; }
+.status-progress { background-color: #fff4e0; color: #cc8e00; }
+
+/* Form Styles - Mobile First (Stacked) */
+.form-row {
+  display: flex;
+  flex-direction: column; /* Stacks form inputs vertically on phones */
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
+  font-size: 14px;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+  padding: 12px;
+  font-size: 16px; /* 16px prevents iOS from auto-zooming */
+  border: 1px solid #c2bebe;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #333333;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-group input:focus, 
+.form-group select:focus, 
+.form-group textarea:focus {
+  outline: none;
+  border-color: #057840; 
+}
+
+.help-text {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+}
+
+/* =========================================================
+   MEDIA QUERIES FOR TABLET & DESKTOP (min-width: 768px)
+   ========================================================= */
+@media (min-width: 768px) {
+  .dashboard-container {
+    padding: 40px 20px;
+  }
+
+  .dashboard-card {
+    padding: 30px;
+  }
+
+  /* Un-stack the header */
+  .dashboard-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dashboard-header h1 {
+    text-align: left;
+  }
+
+  .primary-btn {
+    width: auto; /* Buttons only take up needed space on desktop */
+  }
+
+  /* Un-stack the form rows side-by-side */
+  .form-row {
+    flex-direction: row;
+  }
+}

@@ -4,33 +4,29 @@ import { Link, useNavigate } from 'react-router-dom';
 
 export default function StaffDashboard() {
   const [showForm, setShowForm] = useState(false);
-  
-  // 1. Initialize an empty array to hold the tickets
   const [tickets, setTickets] = useState([]);
 
-  // 2. Handle the form submission
-  const handleSubmitTicket = (e) => {
-    e.preventDefault(); // Stop the page from reloading
+  // --- NEW: Calculate stats dynamically from the tickets array ---
+  const totalTickets = tickets.length;
+  const pendingTickets = tickets.filter(ticket => ticket.status === 'Pending').length;
+  const resolvedTickets = tickets.filter(ticket => ticket.status === 'Resolved').length;
+  // ---------------------------------------------------------------
 
-    // Automatically get today's date in YYYY-MM-DD format
+  const handleSubmitTicket = (e) => {
+    e.preventDefault(); 
+
     const today = new Date();
     const formattedDate = today.toISOString().split('T')[0];
-
-    // Grab the subject the user typed from the form event
     const subjectValue = e.target.subject.value;
 
-    // Create a new ticket object
     const newTicket = {
-      id: Date.now(), // Generate a unique ID for React's mapping
+      id: Date.now(), 
       subject: subjectValue,
       date: formattedDate,
-      status: 'Pending' // Default status for new tickets
+      status: 'Pending' 
     };
 
-    // 3. Add the new ticket to our state array
     setTickets([...tickets, newTicket]);
-
-    // 4. Close the form to return to the table view
     setShowForm(false);
   };
 
@@ -50,6 +46,23 @@ export default function StaffDashboard() {
 
         {!showForm ? (
           <div>
+            {/* --- NEW: Stats Cards UI --- */}
+            <div className="stats-container">
+              <div className="stat-card">
+                <div className="stat-title">Total Sent</div>
+                <div className="stat-value">{totalTickets}</div>
+              </div>
+              <div className="stat-card pending">
+                <div className="stat-title">Pending</div>
+                <div className="stat-value">{pendingTickets}</div>
+              </div>
+              <div className="stat-card resolved">
+                <div className="stat-title">Resolved</div>
+                <div className="stat-value">{resolvedTickets}</div>
+              </div>
+            </div>
+            {/* --------------------------- */}
+
             <h2>My Active Tickets</h2>
             <div className="table-responsive">
               <table className="ticket-table">
@@ -61,7 +74,6 @@ export default function StaffDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {/* 5. Dynamically render tickets or show an empty state message */}
                   {tickets.length === 0 ? (
                     <tr>
                       <td colSpan="3" style={{ textAlign: 'center', padding: '30px', color: '#888' }}>

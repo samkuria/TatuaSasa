@@ -128,21 +128,21 @@ function Home() {
       {/* Features */}
       <section style={styles.features}>
         <div style={styles.card}>
-          <h2>Fast</h2>
+          <h2>⚡ Fast</h2>
           <p>
             Lightning-fast applications built with modern technologies.
           </p>
         </div>
 
         <div style={styles.card}>
-          <h2>Secure</h2>
+          <h2>🔒 Secure</h2>
           <p>
             Security-first architecture to keep your data protected.
           </p>
         </div>
 
         <div style={styles.card}>
-          <h2>Scalable</h2>
+          <h2>🚀 Scalable</h2>
           <p>
             Grow your business with software that scales effortlessly.
           </p>

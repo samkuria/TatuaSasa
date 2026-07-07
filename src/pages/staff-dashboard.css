@@ -57,6 +57,51 @@
   background-color: #0a5c42; /* Slightly lighter green on hover */
 }
 
+/* --- NEW STATS CARDS --- */
+.stats-container {
+  display: grid;
+  grid-template-columns: 1fr; /* Stacks vertically on mobile by default */
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  border-top: 4px solid #064732; /* Matches the new brand green */
+}
+
+/* Color accents for specific card statuses */
+.stat-card.pending { border-top-color: #a40606; }
+.stat-card.resolved { border-top-color: #057840; }
+
+.stat-title {
+  font-size: 13px;
+  color: #666;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 8px;
+}
+
+/* Media query to put the cards side-by-side on larger screens */
+@media (min-width: 768px) {
+  .stats-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+/* ----------------------- */
+
 /* Table Responsive Wrapper */
 .table-responsive {
   width: 100%;

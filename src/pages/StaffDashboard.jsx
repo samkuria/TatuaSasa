@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import './staff-dashboard.css';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function StaffDashboard() {
   const [showForm, setShowForm] = useState(false);

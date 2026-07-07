@@ -8,26 +8,30 @@
   justify-content: center;
   min-height: 100vh;
   padding: 20px;
-  background-color: #127d59; /* Light gray background */
+  background-color: #f4f7f6; /* Clean, light background */
   font-family: system-ui, -apple-system, sans-serif;
 }
-
 
 /* Style the form card */
 .login-form {
   width: 100%;
-  max-width: 400px; /* Prevents it from getting too wide on desktop */
+  max-width: 400px;
   background: white;
   padding: 30px;
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Softer shadow for light theme */
 }
 
 /* Typography */
-.login-form h1, 
+.login-form h1 {
+  color: #064732; /* The NEW deep forest green */
+  margin-bottom: 5px;
+  text-align: center;
+}
+
 .login-form h2 {
   text-align: center;
-  margin-bottom: 10px;
+  margin-bottom: 20px; /* Adjusted spacing */
   color: #333;
 }
 
@@ -44,10 +48,9 @@
   color: #555;
 }
 
-/* Inputs optimized for touch (minimum 44px height for mobile) */
 .form-group input {
   padding: 12px;
-  font-size: 16px; /* Prevents iOS from auto-zooming */
+  font-size: 16px; 
   border: 1px solid #c2bebe;
   border-radius: 4px;
   transition: border-color 0.2s;
@@ -57,7 +60,7 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #0066cc; /* Brand color highlight */
+  border-color: #064732; /* Focus matches the new brand green */
 }
 
 /* Submit Button */
@@ -67,7 +70,7 @@
   font-size: 16px;
   font-weight: bold;
   color: white;
-  background-color: #a40606;
+  background-color: #064732; /* Swapped from red to the new green */
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -75,17 +78,10 @@
 }
 
 .submit-btn:hover {
-  background-color: rgb(238, 169, 7);
+  background-color: #0a5c42; /* Slightly lighter green on hover */
 }
 
-.login-form h1 {
-  color: #057840; 
-  margin-bottom: 5px;
-}
-
-/* --- NEW STYLES FOR PASSWORD TOGGLE --- */
-
-/* Create a positioning context for the button */
+/* Password Toggle */
 .password-wrapper {
   position: relative;
   display: flex;
@@ -93,14 +89,12 @@
   width: 100%;
 }
 
-/* Ensure the input takes full width of the wrapper and make room for the icon */
 .password-wrapper input {
   width: 100%;
-  padding-right: 45px; /* Adds space so typing doesn't overlap the icon */
-  box-sizing: border-box; /* Ensures padding doesn't break the layout width */
+  padding-right: 45px; 
+  box-sizing: border-box; 
 }
 
-/* Position the button absolutely on the right side */
 .password-toggle {
   position: absolute;
   right: 10px;
@@ -116,12 +110,10 @@
 }
 
 .password-toggle:focus {
-  outline: none; /* Keeps it clean when clicked */
+  outline: none; 
 }
 
-/* --- NEW STYLES FOR DIVIDER & GOOGLE BUTTON --- */
-
-/* The "or" divider */
+/* Divider & Google Button */
 .divider {
   display: flex;
   align-items: center;
@@ -142,12 +134,11 @@
   padding: 0 10px;
 }
 
-/* Google Sign-in Button */
 .google-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px; /* Space between the logo and text */
+  gap: 10px; 
   width: 100%;
   padding: 12px;
   font-size: 16px;
@@ -157,7 +148,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  margin-bottom: 15px; /* Pushes the main Log In button down slightly */
+  margin-bottom: 15px; 
   transition: background-color 0.2s, box-shadow 0.2s;
 }
 
@@ -166,16 +157,15 @@
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
-/* --- NEW STYLES FOR HELPER LINKS --- */
-
+/* Helper Links */
 .auth-links {
-  margin-top: 25px; /* Creates breathing room below the login button */
+  margin-top: 25px; 
   text-align: center;
   font-size: 14px;
   color: #666;
   display: flex;
   flex-direction: column;
-  gap: 12px; /* Spaces out the two lines */
+  gap: 12px; 
 }
 
 .auth-links p {
@@ -183,13 +173,12 @@
 }
 
 .auth-links .link {
-  color: #0066cc; /* Matches your brand highlight color */
+  color: #064732; /* Links now match the new green */
   text-decoration: none;
-  font-weight: 600; /* Makes the clickable action stand out */
+  font-weight: 600; 
   transition: text-decoration 0.2s;
 }
 
-/* Adds a clean underline when the user hovers over the text */
 .auth-links .link:hover {
   text-decoration: underline;
 }

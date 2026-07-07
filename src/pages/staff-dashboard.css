@@ -6,8 +6,8 @@
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  padding: 20px 15px; /* Reduced padding for mobile screens */
-  background-color: #127d59; 
+  padding: 20px 15px; 
+  background-color: #f4f7f6; /* Clean, light background */
   font-family: system-ui, -apple-system, sans-serif;
 }
 
@@ -16,16 +16,16 @@
   width: 100%;
   max-width: 1000px; 
   background: white;
-  padding: 20px; /* Reduced padding for mobile */
+  padding: 20px; 
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Softer shadow */
   box-sizing: border-box;
 }
 
-/* Header - Mobile First (Stacked) */
+/* Header */
 .dashboard-header {
   display: flex;
-  flex-direction: column; /* Stacks title and button on phones */
+  flex-direction: column; 
   gap: 15px;
   align-items: stretch;
   border-bottom: 1px solid #ddd;
@@ -34,34 +34,34 @@
 }
 
 .dashboard-header h1 {
-  color: #057840; 
+  color: #064732; /* The NEW deep forest green */
   margin: 0;
   text-align: center;
 }
 
-/* Reusing blueprint button */
+/* Primary Button */
 .primary-btn {
-  padding: 12px 20px; /* Slightly taller for touch targets */
+  padding: 12px 20px; 
   font-size: 16px;
   font-weight: bold;
   color: white;
-  background-color: #a40606;
+  background-color: #064732; /* New green */
   border: none;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s;
-  width: 100%; /* Full width button on mobile */
+  width: 100%; 
 }
 
 .primary-btn:hover {
-  background-color: rgb(238, 169, 7);
+  background-color: #0a5c42; /* Slightly lighter green on hover */
 }
 
 /* Table Responsive Wrapper */
 .table-responsive {
   width: 100%;
-  overflow-x: auto; /* Allows horizontal scrolling on tiny phones */
-  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  overflow-x: auto; 
+  -webkit-overflow-scrolling: touch; 
   margin-top: 20px;
 }
 
@@ -69,7 +69,7 @@
 .ticket-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 500px; /* Ensures the table doesn't shrink to unreadable sizes */
+  min-width: 500px; 
 }
 
 .ticket-table th, 
@@ -83,7 +83,7 @@
 .ticket-table th {
   color: #555;
   font-weight: 600;
-  white-space: nowrap; /* Prevents headers from wrapping awkwardly */
+  white-space: nowrap; 
 }
 
 /* Status Badges */
@@ -97,10 +97,10 @@
 .status-pending { background-color: #ffeaea; color: #a40606; }
 .status-progress { background-color: #fff4e0; color: #cc8e00; }
 
-/* Form Styles - Mobile First (Stacked) */
+/* Form Styles */
 .form-row {
   display: flex;
-  flex-direction: column; /* Stacks form inputs vertically on phones */
+  flex-direction: column; 
   gap: 15px;
   margin-bottom: 15px;
 }
@@ -122,7 +122,7 @@
 .form-group select, 
 .form-group textarea {
   padding: 12px;
-  font-size: 16px; /* 16px prevents iOS from auto-zooming */
+  font-size: 16px; 
   border: 1px solid #c2bebe;
   border-radius: 4px;
   background-color: #ffffff;
@@ -135,7 +135,7 @@
 .form-group select:focus, 
 .form-group textarea:focus {
   outline: none;
-  border-color: #057840; 
+  border-color: #064732; /* Focus matches the new brand green */
 }
 
 .help-text {
@@ -144,9 +144,7 @@
   margin-top: 4px;
 }
 
-/* =========================================================
-   MEDIA QUERIES FOR TABLET & DESKTOP (min-width: 768px)
-   ========================================================= */
+/* Media Queries for Tablet & Desktop */
 @media (min-width: 768px) {
   .dashboard-container {
     padding: 40px 20px;
@@ -156,7 +154,6 @@
     padding: 30px;
   }
 
-  /* Un-stack the header */
   .dashboard-header {
     flex-direction: row;
     justify-content: space-between;
@@ -168,10 +165,9 @@
   }
 
   .primary-btn {
-    width: auto; /* Buttons only take up needed space on desktop */
+    width: auto; 
   }
 
-  /* Un-stack the form rows side-by-side */
   .form-row {
     flex-direction: row;
   }

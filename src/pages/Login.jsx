@@ -9,7 +9,7 @@ export default function Login() {
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
+  
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(''); // State to hold login errors
 

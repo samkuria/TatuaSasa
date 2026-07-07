@@ -23,12 +23,9 @@ export default function App() {
     return (
         <BrowserRouter>
         <Routes>
-            <Route path="/" element={session? <Home />: <Login />} />
-            <Route path="/login" element={<Login />} />
-           <Route path="/home" element={session ? <Home /> : <Login />} />
-           <Route path="/signup" element={<SignUp />} />
-           <Route path="/dashboard" element={session ? <StaffDashboard /> : <Login />} />
-           <Route path="admin/supervisors" element={session ? <AdminSupervisors /> : <Login />} />
+            <Route path="/" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/dashboard" element={<StaffDashboard />} />
         </Routes>
         </BrowserRouter>
     )

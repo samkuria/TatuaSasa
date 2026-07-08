@@ -1,26 +1,6 @@
 import { useState, useEffect } from "react";
+import { supabase } from '../config/supabaseClient'; 
 import './technician-dashboard.css';
-import { supabase } from '../config/supabaseClient';
-
-// --- MOCK DATA ---
-const demoJob = {
-  id: 1,
-  title: "Projector HDMI not working",
-  ticket: "Ticket #204 — Science Block, Lab 4",
-  staffName: "Samuel",
-  description: "The projector is not connecting to any laptops, it says no signal.",
-  stage: "pending"
-};
-
-const initialSolved = [
-  { title: "Replaced fuser unit, 2nd floor", when: "Yesterday" },
-  { title: "Fixed VPN certificate error", when: "2 days ago" },
-];
-
-const leaderboard = [
-  { name: "Brian K.", count: 42 },
-  { name: "Amina R.", count: 33 },
-];
 
 // Available categories (Must match StaffDashboard options)
 const CATEGORIES = [
@@ -32,35 +12,42 @@ const CATEGORIES = [
 
 export default function TechnicianDashboard() {
   // --- STATE ---
-  const [userName, setUserName] = useState(""); // Start empty
-  const [isNewlyPromoted, setIsNewlyPromoted] = useState(true);
+  const [userName, setUserName] = useState(""); 
+  const [isNewlyPromoted, setIsNewlyPromoted] = useState(true); 
   const [selectedSpecialties, setSelectedSpecialties] = useState([]);
   
+  // Production-ready empty states for real data
   const [jobs, setJobs] = useState([]);
+  const [solvedJobs, setSolvedJobs] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
+  
   const [selectedId, setSelectedId] = useState(null);
   const [isActive, setIsActive] = useState(false);
 
   const hasJobs = jobs.length > 0;
   const selectedJob = jobs.find((j) => j.id === selectedId) || jobs[0];
 
-  // --- NEW: Fetch User Data from Supabase ---
+  // --- Fetch User Data ---
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user }, error } = await supabase.auth.getUser();
+      const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Extract the full_name we saved during sign-up
         const fullName = user.user_metadata?.full_name || "Technician";
-        
-        // Grab just the first name for a friendlier greeting (splits at the space)
         const firstName = fullName.split(' ')[0];
-        
         setUserName(firstName);
+        
+        // TODO for backend wiring: 
+        // 1. Check if user has already set specialties in your users table to flip setIsNewlyPromoted
+        // 2. Fetch active jobs assigned to this user id
+        // 3. Fetch solved jobs for this user id
+        // 4. Fetch leaderboard stats
       }
     };
 
     fetchUser();
   }, []);
+
   // --- HANDLERS ---
   const handleSpecialtyToggle = (categoryId) => {
     setSelectedSpecialties(prev => 
@@ -70,20 +57,21 @@ export default function TechnicianDashboard() {
     );
   };
 
-  const completeOnboarding = () => {
-    // In production, save selectedSpecialties to Supabase user profile here
-    console.log("Saved specialties:", selectedSpecialties);
+  const completeOnboarding = async () => {
+    // TODO: Send selectedSpecialties to your Supabase database here
     setIsNewlyPromoted(false);
   };
 
-  const acceptJob = (id) => {
+  const acceptJob = async (id) => {
+    // Optimistic UI update
     setJobs(jobs.map(j => j.id === id ? { ...j, stage: 'working' } : j));
+    // TODO: Update the ticket status to 'working' in your Supabase tickets table
   };
 
   return (
     <div className="tech-container">
       
-      {/* === ONBOARDING MODAL (Only shows for newly promoted admins) === */}
+      {/* === ONBOARDING MODAL === */}
       {isNewlyPromoted && (
         <div className="modal-overlay">
           <div className="onboarding-modal">
@@ -137,16 +125,13 @@ export default function TechnicianDashboard() {
           </button>
         </header>
 
+        {/* Real Production Empty State */}
         {!hasJobs ? (
           <div className="tech-empty-state">
             <h2 style={{color: '#064732', marginBottom: '10px'}}>No tickets assigned yet</h2>
-            <p style={{color: '#666', marginBottom: '20px'}}>
-              Stay active. The automated system will assign tickets here based on your specialties and leaderboard rank.
+            <p style={{color: '#666', margin: 0}}>
+              Stay active. The automated system will assign tickets here based on your specialties and available queue.
             </p>
-            {/* DEMO BUTTON: Remove in production */}
-            <button className="btn-primary" style={{width: 'auto'}} onClick={() => setJobs([demoJob])}>
-              Simulate Incoming Ticket
-            </button>
           </div>
         ) : (
           <div className="tech-grid">
@@ -163,7 +148,6 @@ export default function TechnicianDashboard() {
               ))}
             </div>
             
-            {/* Simplified Workspace Area for this 2-file structure */}
             <div style={{padding: '30px'}}>
               <h2 style={{margin: '0 0 5px 0', color: '#333'}}>{selectedJob.title}</h2>
               <p style={{margin: '0 0 20px 0', color: '#666', fontSize: '14px'}}>{selectedJob.ticket}</p>
@@ -192,22 +176,30 @@ export default function TechnicianDashboard() {
         <div className="panels-grid">
           <div className="tech-panel">
             <h3>Your Recent Resolutions</h3>
-            {initialSolved.map(s => (
-              <div key={s.title} style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #f0f0f0', fontSize: '14px'}}>
-                <span>{s.title}</span>
-                <span style={{color: '#888'}}>{s.when}</span>
-              </div>
-            ))}
+            {solvedJobs.length === 0 ? (
+              <p style={{color: '#888', fontSize: '14px', margin: 0}}>You haven't resolved any tickets yet.</p>
+            ) : (
+              solvedJobs.map(s => (
+                <div key={s.id} style={{display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid #f0f0f0', fontSize: '14px'}}>
+                  <span>{s.title}</span>
+                  <span style={{color: '#888'}}>{s.when}</span>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="tech-panel">
             <h3>Leaderboard (Top ICT Officers)</h3>
-            {leaderboard.map((l, i) => (
-              <div key={l.name} style={{display: 'flex', justifyContent: 'space-between', padding: '10px', background: i % 2 === 0 ? '#f9f9f9' : 'white', fontSize: '14px'}}>
-                <strong>{i + 1}. {l.name}</strong>
-                <span style={{color: '#666'}}>{l.count} resolved</span>
-              </div>
-            ))}
+            {leaderboard.length === 0 ? (
+              <p style={{color: '#888', fontSize: '14px', margin: 0}}>Leaderboard data is currently unavailable.</p>
+            ) : (
+              leaderboard.map((l, i) => (
+                <div key={l.id} style={{display: 'flex', justifyContent: 'space-between', padding: '10px', background: i % 2 === 0 ? '#f9f9f9' : 'white', fontSize: '14px'}}>
+                  <strong>{i + 1}. {l.name}</strong>
+                  <span style={{color: '#666'}}>{l.count} resolved</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </article>

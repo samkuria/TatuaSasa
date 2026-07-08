@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import AdminSupervisors from './pages/AdminSupervisors';
 import StaffDashboard from './pages/StaffDashboard';
+import TechnicianDashboard from './pages/TechnicianDashboard';
 export default function App() {
     const [session, setSession] = useState(null);
 
@@ -25,7 +26,7 @@ export default function App() {
         <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/signup" element={<SignUp />} />
-            <Route path="/dashboard" element={<StaffDashboard />} />
+            <Route path="/dashboard" element={<TechnicianDashboard />} />
         </Routes>
         </BrowserRouter>
     )

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import './technician-dashboard.css';
+import { supabase } from '../config/supabaseClient';
 
 // --- MOCK DATA ---
 const demoJob = {
@@ -31,9 +32,8 @@ const CATEGORIES = [
 
 export default function TechnicianDashboard() {
   // --- STATE ---
-  // Simulate fetching user data from Supabase
-  const [userName, setUserName] = useState("Alex"); 
-  const [isNewlyPromoted, setIsNewlyPromoted] = useState(true); // Triggers the modal
+  const [userName, setUserName] = useState(""); // Start empty
+  const [isNewlyPromoted, setIsNewlyPromoted] = useState(true);
   const [selectedSpecialties, setSelectedSpecialties] = useState([]);
   
   const [jobs, setJobs] = useState([]);
@@ -43,6 +43,24 @@ export default function TechnicianDashboard() {
   const hasJobs = jobs.length > 0;
   const selectedJob = jobs.find((j) => j.id === selectedId) || jobs[0];
 
+  // --- NEW: Fetch User Data from Supabase ---
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Extract the full_name we saved during sign-up
+        const fullName = user.user_metadata?.full_name || "Technician";
+        
+        // Grab just the first name for a friendlier greeting (splits at the space)
+        const firstName = fullName.split(' ')[0];
+        
+        setUserName(firstName);
+      }
+    };
+
+    fetchUser();
+  }, []);
   // --- HANDLERS ---
   const handleSpecialtyToggle = (categoryId) => {
     setSelectedSpecialties(prev => 

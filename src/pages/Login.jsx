@@ -1,72 +1,152 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import './login.css';
-import { signIn } from '../config/auth';
-import { supabase } from '../config/supabaseClient';
+import { supabase } from '../config/supabaseClient'; // Make sure this path is correct based on your folder structure
+import './login.css'; 
+import {signUp} from '../config/auth';
 
-export default function Login() {
-  const navigate = useNavigate();
+export default function SignUp() {
+  const navigate = useNavigate(); // Hook for redirecting the user
   
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(''); // State to hold login errors
+  const [error, setError] = useState('');
 
-const handleLogin = async (e) => {
-  e.preventDefault();
-
-  try {
-    const { user } = await signIn(email, password);
-
-    const { data: profile, error: profileError } = await supabase
-      .from('profiles')
-      .select('role, status')
-      .eq('id', user.id)
-      .single();
-
-    if (profileError) throw profileError;
-
-    switch (profile.role) {
-      case 'admin':
-        navigate('/admin/supervisors');
-        break;
-      case 'supervisor':
-        navigate('/supervisor/dashboard');
-        break;
-      case 'technician':
-        navigate(profile.status === 'approved' ? '/technician/dashboard' : '/pending-approval');
-        break;
-      default:
-        navigate('/dashboard');
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    
+    if (password !== confirmPassword) {
+      setError("Passwords do not match!");
+      return;
     }
-  } catch (error) {
-    console.error("Login error:", error);
-  }
-};
+    
+    try {
+      response = await signUp(email, password, name);
+      console.log("Sign up successful:", response);
+      
+    } catch (error) {
+      setError(error.message);
+    }
+    setError('');
 
-  const handleGoogleLogin = () => {
-    console.log("Initiating Google Sign-In");
+    try {
+      // Send the sign-up request to Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: name,
+          }
+        }
+      });
+
+      if (error) {
+        // Check if the error is because the user already exists
+        if (error.message.toLowerCase().includes('already registered')) {
+          setModalConfig({
+            isOpen: true,
+            type: 'exists',
+            message: 'An account with this email already exists. Please log in.'
+          });
+        } else {
+          // Handle any other Supabase errors (e.g., weak password)
+          setModalConfig({
+            isOpen: true,
+            type: 'error',
+            message: error.message
+          });
+        }
+      } else {
+        // Success!
+        setModalConfig({
+          isOpen: true,
+          type: 'success',
+          message: 'Sign up successful! You can now log in to your account.'
+        });
+      }
+    } catch (err) {
+      setModalConfig({
+        isOpen: true,
+        type: 'error',
+        message: 'An unexpected error occurred. Please try again.'
+      });
+    }
+  };
+
+  // Function to handle the "Okay" button click
+  const handleModalClose = () => {
+    if (modalConfig.type === 'success' || modalConfig.type === 'exists') {
+      navigate('/'); // Redirect to login
+    } else {
+      // Just close the modal so they can fix the error
+      setModalConfig({ ...modalConfig, isOpen: false }); 
+    }
+  };
+
+  const handleGoogleSignUp = () => {
+    console.log("Initiating Google Sign-Up");
   };
 
   return (
     <div className="login-container">
-      <form className="login-form" onSubmit={handleLogin}>
+      
+      {/* --- CUSTOM NOTIFICATION MODAL --- */}
+      {modalConfig.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.6)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+          padding: '20px'
+        }}>
+          {/* Reusing your login-form class for the modal card! */}
+          <div className="login-form" style={{ textAlign: 'center', margin: 0 }}>
+            <h2 style={{ 
+              color: modalConfig.type === 'error' ? '#a40606' : '#057840',
+              marginBottom: '15px'
+            }}>
+              {modalConfig.type === 'success' && 'Success!'}
+              {modalConfig.type === 'exists' && 'Already Signed Up'}
+              {modalConfig.type === 'error' && 'Sign Up Failed'}
+            </h2>
+            <p style={{ color: '#555', marginBottom: '25px', lineHeight: '1.5' }}>
+              {modalConfig.message}
+            </p>
+            <button className="submit-btn" onClick={handleModalClose}>
+              Okay
+            </button>
+          </div>
+        </div>
+      )}
+      {/* --------------------------------- */}
+
+      <form className="login-form" onSubmit={handleSignUp}>
         <h1>Tatua Sasa</h1>
-        <h2>Login to your Account</h2>
+        <h2>Create an Account</h2>
         
-        {/* --- ERROR MESSAGE DISPLAY --- */}
-        {error && (
-          <p style={{ color: '#a40606', textAlign: 'center', marginBottom: '15px', fontWeight: '500' }}>
-            {error}
-          </p>
-        )}
-        {/* ----------------------------- */}
+        {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '15px' }}>{error}</p>}
+        
+        <div className="form-group">
+          <label htmlFor="name">Full Name:</label>
+          <input 
+            type="text" 
+            id="name" 
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required 
+          />
+        </div>
 
         <div className="form-group">
           <label htmlFor="email">Email:</label>
           <input 
-            type="email"
+            type="email" 
             id="email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -107,6 +187,17 @@ const handleLogin = async (e) => {
           </div>
         </div>
 
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Confirm Password:</label>
+          <input 
+            type={showPassword ? "text" : "password"} 
+            id="confirmPassword" 
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required 
+          />
+        </div>
+
         <div className="divider">
           <span>or</span>
         </div>
@@ -114,7 +205,7 @@ const handleLogin = async (e) => {
         <button 
           type="button" 
           className="google-btn" 
-          onClick={handleGoogleLogin}
+          onClick={handleGoogleSignUp}
         >
           <svg viewBox="0 0 48 48" width="20" height="20">
             <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"/>
@@ -122,21 +213,16 @@ const handleLogin = async (e) => {
             <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
             <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
           </svg>
-          Sign in with Google
+          Sign up with Google
         </button>
         
-        <button type="submit" className="submit-btn">Log In</button>
+        <button type="submit" className="submit-btn">Sign Up</button>
 
         <div className="auth-links">
           <p>
-            Forgot password? <a href="#" className="link">Reset</a>
-          </p>
-          <p>
-            {/* Replaced <a> tag with React Router <Link> */}
-            Are you signed up? <Link to="/signup" className="link">Sign up</Link>
+            Already have an account? <Link to="/" className="link">Log In</Link>
           </p>
         </div>
-
       </form>
     </div>
   );

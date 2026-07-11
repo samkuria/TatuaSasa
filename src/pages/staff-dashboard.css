@@ -7,25 +7,25 @@
   align-items: flex-start;
   min-height: 100vh;
   padding: 20px 15px; 
-  background-color: #f4f7f6; 
-  font-family: system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-page); 
 }
 
 .dashboard-card {
   width: 100%;
   max-width: 1000px; 
-  background: white;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   padding: 20px; 
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); 
   box-sizing: border-box;
 }
 
-/* --- NEW: Responsive Header Navigation --- */
+/* Responsive Header Navigation */
 .dashboard-header {
   display: flex;
   flex-direction: column; 
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-color);
   padding-bottom: 20px;
   margin-bottom: 20px;
 }
@@ -38,7 +38,7 @@
 }
 
 .header-top h1 {
-  color: #064732; 
+  color: var(--brand-text); 
   margin: 0;
 }
 
@@ -46,13 +46,13 @@
   display: block; 
   background: none;
   border: none;
-  color: #064732;
+  color: var(--brand-text);
   cursor: pointer;
   padding: 5px;
 }
 
 .header-nav {
-  display: none; /* Hidden on mobile until toggled */
+  display: none; 
   flex-direction: column;
   gap: 10px;
   margin-top: 15px;
@@ -69,7 +69,7 @@
   padding: 10px 15px;
   font-size: 16px;
   font-weight: 600;
-  color: #666;
+  color: var(--text-muted);
   cursor: pointer;
   text-align: left;
   border-radius: 4px;
@@ -77,82 +77,55 @@
 }
 
 .nav-tab:hover {
-  background: #f4f7f6;
+  background: var(--sidebar-hover);
 }
 
 .nav-tab.active {
-  color: #064732;
-  background: #e6f0ec;
+  color: var(--brand-text);
+  background: var(--sidebar-active);
 }
 
-/* Desktop Header Adjustments */
-@media (min-width: 768px) {
-  .dashboard-header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .header-top {
-    width: auto;
-  }
-  
-  .menu-toggle {
-    display: none; 
-  }
-  
-  .header-nav {
-    display: flex;
-    flex-direction: row;
-    width: auto;
-    margin-top: 0;
-  }
-}
-/* ---------------------------------------- */
-
-/* (Keep all your existing CSS for Primary Button, Stats Cards, Tables, Forms, etc. below this point) */
 /* Primary Button */
 .primary-btn {
   padding: 12px 20px; 
   font-size: 16px;
   font-weight: bold;
   color: white;
-  background-color: #064732; /* New green */
+  background-color: var(--brand-bg); 
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: opacity 0.2s;
   width: 100%; 
 }
 
 .primary-btn:hover {
-  background-color: #0a5c42; /* Slightly lighter green on hover */
+  opacity: 0.9;
 }
 
-/* --- NEW STATS CARDS --- */
+/* STATS CARDS */
 .stats-container {
   display: grid;
-  grid-template-columns: 1fr; /* Stacks vertically on mobile by default */
+  grid-template-columns: 1fr; 
   gap: 15px;
   margin-bottom: 30px;
 }
 
 .stat-card {
-  background: #ffffff;
+  background: var(--bg-card);
   padding: 20px;
   border-radius: 8px;
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-  border-top: 4px solid #064732; /* Matches the new brand green */
+  border-top: 4px solid var(--brand-bg); 
 }
 
-/* Color accents for specific card statuses */
-.stat-card.pending { border-top-color: #a40606; }
-.stat-card.resolved { border-top-color: #057840; }
+.stat-card.pending { border-top-color: #ef4444; } 
+.stat-card.resolved { border-top-color: var(--brand-text); }
 
 .stat-title {
   font-size: 13px;
-  color: #666;
+  color: var(--text-muted);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -161,18 +134,9 @@
 .stat-value {
   font-size: 32px;
   font-weight: bold;
-  color: #333;
+  color: var(--text-main);
   margin-top: 8px;
 }
-
-/* Media query to put the cards side-by-side on larger screens */
-@media (min-width: 768px) {
-  .stats-container {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-}
-/* ----------------------- */
 
 /* Table Responsive Wrapper */
 .table-responsive {
@@ -193,12 +157,13 @@
 .ticket-table td {
   text-align: left;
   padding: 12px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
   font-size: 14px;
+  color: var(--text-main);
 }
 
 .ticket-table th {
-  color: #555;
+  color: var(--text-muted);
   font-weight: 600;
   white-space: nowrap; 
 }
@@ -211,8 +176,8 @@
   font-weight: bold;
   white-space: nowrap;
 }
-.status-pending { background-color: #ffeaea; color: #a40606; }
-.status-progress { background-color: #fff4e0; color: #cc8e00; }
+.status-pending { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
+.status-progress { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.2); }
 
 /* Form Styles */
 .form-row {
@@ -231,7 +196,7 @@
 .form-group label {
   margin-bottom: 8px;
   font-weight: 500;
-  color: #555;
+  color: var(--text-muted);
   font-size: 14px;
 }
 
@@ -240,24 +205,30 @@
 .form-group textarea {
   padding: 12px;
   font-size: 16px; 
-  border: 1px solid #c2bebe;
+  border: 1px solid var(--border-input);
   border-radius: 4px;
-  background-color: #ffffff;
-  color: #333333;
+  background-color: var(--input-bg);
+  color: var(--text-main);
   width: 100%;
   box-sizing: border-box;
+  transition: border-color 0.2s ease;
 }
 
 .form-group input:focus, 
 .form-group select:focus, 
 .form-group textarea:focus {
   outline: none;
-  border-color: #064732; /* Focus matches the new brand green */
+  border-color: var(--brand-text); 
+}
+
+.form-group select option {
+  background-color: var(--bg-card);
+  color: var(--text-main);
 }
 
 .help-text {
   font-size: 12px;
-  color: #888;
+  color: var(--text-muted);
   margin-top: 4px;
 }
 
@@ -266,25 +237,36 @@
   .dashboard-container {
     padding: 40px 20px;
   }
-
   .dashboard-card {
     padding: 30px;
   }
-
   .dashboard-header {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
   }
-
   .dashboard-header h1 {
     text-align: left;
   }
-
+  .header-top {
+    width: auto;
+  }
+  .menu-toggle {
+    display: none; 
+  }
+  .header-nav {
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    margin-top: 0;
+  }
   .primary-btn {
     width: auto; 
   }
-
+  .stats-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
   .form-row {
     flex-direction: row;
   }

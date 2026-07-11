@@ -7,38 +7,110 @@
   align-items: flex-start;
   min-height: 100vh;
   padding: 20px 15px; 
-  background-color: #f4f7f6; /* Clean, light background */
+  background-color: #f4f7f6; 
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* Dashboard Card */
 .dashboard-card {
   width: 100%;
   max-width: 1000px; 
   background: white;
   padding: 20px; 
   border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Softer shadow */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); 
   box-sizing: border-box;
 }
 
-/* Header */
+/* --- NEW: Responsive Header Navigation --- */
 .dashboard-header {
   display: flex;
   flex-direction: column; 
-  gap: 15px;
-  align-items: stretch;
   border-bottom: 1px solid #ddd;
   padding-bottom: 20px;
   margin-bottom: 20px;
 }
 
-.dashboard-header h1 {
-  color: #064732; /* The NEW deep forest green */
-  margin: 0;
-  text-align: center;
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
+.header-top h1 {
+  color: #064732; 
+  margin: 0;
+}
+
+.menu-toggle {
+  display: block; 
+  background: none;
+  border: none;
+  color: #064732;
+  cursor: pointer;
+  padding: 5px;
+}
+
+.header-nav {
+  display: none; /* Hidden on mobile until toggled */
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 15px;
+  width: 100%;
+}
+
+.header-nav.open {
+  display: flex;
+}
+
+.nav-tab {
+  background: none;
+  border: none;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.nav-tab:hover {
+  background: #f4f7f6;
+}
+
+.nav-tab.active {
+  color: #064732;
+  background: #e6f0ec;
+}
+
+/* Desktop Header Adjustments */
+@media (min-width: 768px) {
+  .dashboard-header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .header-top {
+    width: auto;
+  }
+  
+  .menu-toggle {
+    display: none; 
+  }
+  
+  .header-nav {
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    margin-top: 0;
+  }
+}
+/* ---------------------------------------- */
+
+/* (Keep all your existing CSS for Primary Button, Stats Cards, Tables, Forms, etc. below this point) */
 /* Primary Button */
 .primary-btn {
   padding: 12px 20px; 

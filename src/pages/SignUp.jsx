@@ -1,222 +1,181 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { supabase } from '../config/supabaseClient'; // Make sure this path is correct based on your folder structure
-import './login.css'; 
-import {signUp} from '../config/auth';
+import { signUp } from '../config/auth';
+import './login.css'; // Importing your custom CSS
 
 export default function SignUp() {
-  const navigate = useNavigate(); // Hook for redirecting the user
-  
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  
+  // State for Feedback Mechanisms
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState(''); 
+  const [loading, setLoading] = useState(false);           
+  const [validationTriggered, setValidationTriggered] = useState(false); 
+
+  // Client-side quick checks for visual styling
+  const isPasswordMismatch = validationTriggered && password !== confirmPassword;
+  const isPasswordTooShort = validationTriggered && password.length > 0 && password.length < 6;
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccessMessage('');
+    setValidationTriggered(true);
     
+    // Form Validation Guard
     if (password !== confirmPassword) {
       setError("Passwords do not match!");
       return;
     }
+    if (password.length < 6) {
+      setError("Password is too short! Must be at least 6 characters.");
+      return;
+    }
+    
+    setLoading(true); 
     
     try {
-      response = await signUp(email, password, name);
+      const response = await signUp(email, password, name);
       console.log("Sign up successful:", response);
       
-    } catch (error) {
-      setError(error.message);
-    }
-    setError('');
-
-    try {
-      // Send the sign-up request to Supabase
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: name,
-          }
-        }
-      });
-
-      if (error) {
-        // Check if the error is because the user already exists
-        if (error.message.toLowerCase().includes('already registered')) {
-          setModalConfig({
-            isOpen: true,
-            type: 'exists',
-            message: 'An account with this email already exists. Please log in.'
-          });
-        } else {
-          // Handle any other Supabase errors (e.g., weak password)
-          setModalConfig({
-            isOpen: true,
-            type: 'error',
-            message: error.message
-          });
-        }
-      } else {
-        // Success!
-        setModalConfig({
-          isOpen: true,
-          type: 'success',
-          message: 'Sign up successful! You can now log in to your account.'
-        });
-      }
+      // Explicitly prompt the user to check their email
+      setSuccessMessage("Account created successfully! Please check your email inbox to confirm your account."); 
+      
+      // Give them a bit more time (e.g., 4 seconds) to read it before routing away
+      setTimeout(() => {
+        navigate('/'); 
+      }, 4000);
+      
     } catch (err) {
-      setModalConfig({
-        isOpen: true,
-        type: 'error',
-        message: 'An unexpected error occurred. Please try again.'
-      });
+      // Validation and Error Handling mapping
+      if (err.status === 409 || err.message?.includes('already in use')) {
+        setError("An account with this email address already exists. Please log in.");
+      } else if (err.status === 500 || err.message?.includes('network')) {
+        setError("Something went wrong. Please try again later.");
+      } else {
+        setError(err.message || "An unexpected error occurred.");
+      }
+    } finally {
+      setLoading(false); 
     }
-  };
-
-  // Function to handle the "Okay" button click
-  const handleModalClose = () => {
-    if (modalConfig.type === 'success' || modalConfig.type === 'exists') {
-      navigate('/'); // Redirect to login
-    } else {
-      // Just close the modal so they can fix the error
-      setModalConfig({ ...modalConfig, isOpen: false }); 
-    }
-  };
-
-  const handleGoogleSignUp = () => {
-    console.log("Initiating Google Sign-Up");
   };
 
   return (
     <div className="login-container">
-      
-      {/* --- CUSTOM NOTIFICATION MODAL --- */}
-      {modalConfig.isOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.6)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-          padding: '20px'
-        }}>
-          {/* Reusing your login-form class for the modal card! */}
-          <div className="login-form" style={{ textAlign: 'center', margin: 0 }}>
-            <h2 style={{ 
-              color: modalConfig.type === 'error' ? '#a40606' : '#057840',
-              marginBottom: '15px'
-            }}>
-              {modalConfig.type === 'success' && 'Success!'}
-              {modalConfig.type === 'exists' && 'Already Signed Up'}
-              {modalConfig.type === 'error' && 'Sign Up Failed'}
-            </h2>
-            <p style={{ color: '#555', marginBottom: '25px', lineHeight: '1.5' }}>
-              {modalConfig.message}
-            </p>
-            <button className="submit-btn" onClick={handleModalClose}>
-              Okay
-            </button>
-          </div>
-        </div>
-      )}
-      {/* --------------------------------- */}
-
       <form className="login-form" onSubmit={handleSignUp}>
         <h1>Tatua Sasa</h1>
         <h2>Create an Account</h2>
+
+        {/* Visual error container feedback */}
+        {error && (
+          <div style={{ color: '#a40606', backgroundColor: '#ffeaea', padding: '12px', borderRadius: '4px', marginBottom: '20px', textAlign: 'center', fontSize: '14px', border: '1px solid #ffcaca' }}>
+            {error}
+          </div>
+        )}
         
-        {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '15px' }}>{error}</p>}
-        
+        {/* Success State Alert Container */}
+        {successMessage && (
+          <div style={{ color: '#057840', backgroundColor: '#e6f4ea', padding: '12px', borderRadius: '4px', marginBottom: '20px', textAlign: 'center', fontSize: '14px', border: '1px solid #bce8cb' }}>
+            {successMessage}
+          </div>
+        )}
+
         <div className="form-group">
           <label htmlFor="name">Full Name:</label>
-          <input 
-            type="text" 
-            id="name" 
+          <input
+            type="text"
+            id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            required 
+            required
+            disabled={loading}
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="email">Email:</label>
-          <input 
-            type="email" 
-            id="email" 
+          <input
+            type="email"
+            id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            required 
+            required
+            disabled={loading}
           />
         </div>
-        
+
         <div className="form-group">
           <label htmlFor="password">Password:</label>
           <div className="password-wrapper">
-            <input 
-              type={showPassword ? "text" : "password"} 
-              id="password" 
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required 
+              required
+              disabled={loading}
+              style={isPasswordTooShort ? { borderColor: '#a40606' } : {}}
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="password-toggle"
               onClick={() => setShowPassword(!showPassword)}
+              disabled={loading}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
-              {showPassword ? (
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
-                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
-                  <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
-                  <line x1="2" x2="22" y1="2" y2="22"/>
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              )}
+              {showPassword ? "Hide" : "Show"}
             </button>
           </div>
+          {isPasswordTooShort && <span style={{ color: '#a40606', fontSize: '12px', marginTop: '4px', display: 'block' }}>Password must be at least 6 characters long.</span>}
         </div>
 
         <div className="form-group">
           <label htmlFor="confirmPassword">Confirm Password:</label>
-          <input 
-            type={showPassword ? "text" : "password"} 
-            id="confirmPassword" 
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            required 
-          />
+          <div className="password-wrapper">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="confirmPassword"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              disabled={loading}
+              style={isPasswordMismatch ? { borderColor: '#a40606' } : {}}
+            />
+          </div>
+          {isPasswordMismatch && <span style={{ color: '#a40606', fontSize: '12px', marginTop: '4px', display: 'block' }}>The verification password does not match.</span>}
         </div>
 
         <div className="divider">
           <span>or</span>
         </div>
 
-        <button 
-          type="button" 
-          className="google-btn" 
-          onClick={handleGoogleSignUp}
+        <button
+          type="button"
+          className="google-btn"
+          onClick={() => console.log("Google Sign Up Clicked")}
+          disabled={loading}
         >
           <svg viewBox="0 0 48 48" width="20" height="20">
-            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"/>
-            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z" />
+            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
           </svg>
           Sign up with Google
         </button>
-        
-        <button type="submit" className="submit-btn">Sign Up</button>
+
+        <button 
+          type="submit" 
+          className="submit-btn"
+          disabled={loading}
+        >
+          {loading ? 'Creating Account...' : 'Sign Up'}
+        </button>
 
         <div className="auth-links">
           <p>

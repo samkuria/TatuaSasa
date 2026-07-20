@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import AdminSupervisors from './pages/AdminSupervisors';
 import StaffDashboard from './pages/StaffDashboard';
 import TechnicianDashboard from './pages/TechnicianDashboard';
+import AdminDashboard from './pages/AdminDashboard';
 export default function App() {
     const [session, setSession] = useState(null);
 
@@ -24,7 +25,7 @@ export default function App() {
     return (
         <BrowserRouter>
         <Routes>
-            <Route path="/" element={<StaffDashboard />} />
+            <Route path="/" element={<AdminDashboard />} />
         </Routes>
         </BrowserRouter>
     )
